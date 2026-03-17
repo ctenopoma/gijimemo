@@ -24,6 +24,7 @@ async fn set_window_opacity(window: WebviewWindow, opacity: f64) -> Result<(), S
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             // Initialize database
             let app_handle = app.handle().clone();
@@ -47,6 +48,8 @@ pub fn run() {
             commands::search_meetings,
             commands::test_llm_connection,
             commands::generate_summary_stream,
+            commands::export_issue_to_db,
+            commands::call_llm_oneshot,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

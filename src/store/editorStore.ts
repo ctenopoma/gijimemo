@@ -2,12 +2,19 @@ import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 import { nanoid } from "../utils/nanoid";
 
+export interface CardImage {
+  id: string;
+  data: string;
+  order_index: number;
+}
+
 export interface AgendaCard {
   id: string;
   meeting_id: string;
   title: string;
   content: string;
   order_index: number;
+  images: CardImage[];
 }
 
 export interface Meeting {
@@ -26,6 +33,7 @@ function newCard(meetingId: string, orderIndex: number): AgendaCard {
     title: "",
     content: "",
     order_index: orderIndex,
+    images: [],
   };
 }
 

@@ -50,12 +50,20 @@ pub struct Settings {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CardImage {
+    pub id: String,
+    pub data: String,
+    pub order_index: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AgendaCard {
     pub id: String,
     pub meeting_id: String,
     pub title: String,
     pub content: String,
     pub order_index: i64,
+    pub images: Vec<CardImage>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -165,11 +173,11 @@ pub fn save_meeting(meeting: Meeting, cards: Vec<AgendaCard>) -> Result<String, 
         ],
     ).map_err(|e| e.to_string())?;
 
-    // Delete existing cards for this meeting
+    // Delete existing cards (and images via CASCADE) for this meeting
     tx.execute("DELETE FROM agenda_cards WHERE meeting_id=?1", [&meeting_id])
         .map_err(|e| e.to_string())?;
 
-    // Insert cards
+    // Insert cards and their images
     for card in &cards {
         let card_id = if card.id.is_empty() {
             Uuid::new_v4().to_string()
@@ -180,6 +188,18 @@ pub fn save_meeting(meeting: Meeting, cards: Vec<AgendaCard>) -> Result<String, 
             "INSERT INTO agenda_cards (id, meeting_id, title, content, order_index) VALUES (?1, ?2, ?3, ?4, ?5)",
             rusqlite::params![card_id, meeting_id, card.title, card.content, card.order_index],
         ).map_err(|e| e.to_string())?;
+
+        for img in &card.images {
+            let img_id = if img.id.is_empty() {
+                Uuid::new_v4().to_string()
+            } else {
+                img.id.clone()
+            };
+            tx.execute(
+                "INSERT INTO card_images (id, card_id, data, order_index) VALUES (?1, ?2, ?3, ?4)",
+                rusqlite::params![img_id, card_id, img.data, img.order_index],
+            ).map_err(|e| e.to_string())?;
+        }
     }
 
     // Update FTS index
@@ -223,17 +243,36 @@ pub fn get_meeting(id: String) -> Result<MeetingWithCards, String> {
         "SELECT id, meeting_id, title, content, order_index FROM agenda_cards WHERE meeting_id=?1 ORDER BY order_index ASC"
     ).map_err(|e| e.to_string())?;
 
-    let cards: Vec<AgendaCard> = stmt.query_map([&id], |row| {
+    let card_rows: Vec<AgendaCard> = stmt.query_map([&id], |row| {
         Ok(AgendaCard {
             id: row.get(0)?,
             meeting_id: row.get(1)?,
             title: row.get(2)?,
             content: row.get(3)?,
             order_index: row.get(4)?,
+            images: vec![],
         })
     }).map_err(|e| e.to_string())?
     .filter_map(|r| r.ok())
     .collect();
+
+    let mut cards: Vec<AgendaCard> = vec![];
+    for mut card in card_rows {
+        let mut img_stmt = conn.prepare(
+            "SELECT id, data, order_index FROM card_images WHERE card_id=?1 ORDER BY order_index ASC"
+        ).map_err(|e| e.to_string())?;
+        let images: Vec<CardImage> = img_stmt.query_map([&card.id], |row| {
+            Ok(CardImage {
+                id: row.get(0)?,
+                data: row.get(1)?,
+                order_index: row.get(2)?,
+            })
+        }).map_err(|e| e.to_string())?
+        .filter_map(|r| r.ok())
+        .collect();
+        card.images = images;
+        cards.push(card);
+    }
 
     Ok(MeetingWithCards { meeting, cards })
 }
@@ -313,7 +352,93 @@ pub fn search_meetings(query: String) -> Result<Vec<MeetingListItem>, String> {
     Ok(items)
 }
 
+// ─── Issuer export command ────────────────────────────────────────────────────
+
+const ISSUER_DB_FILENAME: &str = "issuer.db";
+
+#[tauri::command]
+pub fn export_issue_to_db(
+    db_path: String,
+    title: String,
+    body: String,
+    assignee: String,
+    created_by: String,
+) -> Result<i32, String> {
+    let full_path = std::path::PathBuf::from(&db_path).join(ISSUER_DB_FILENAME);
+
+    if !full_path.exists() {
+        return Err(format!(
+            "対象のデータベースが見つかりません: {}",
+            full_path.display()
+        ));
+    }
+
+    let conn = rusqlite::Connection::open(&full_path)
+        .map_err(|e| format!("DBオープン失敗: {}", e))?;
+
+    let now = chrono::Local::now().to_rfc3339();
+
+    let next_id: i32 = conn
+        .query_row(
+            "SELECT COALESCE(MAX(id), 0) + 1 FROM issues",
+            [],
+            |row| row.get(0),
+        )
+        .map_err(|e| format!("ID採番失敗: {}", e))?;
+
+    conn.execute(
+        "INSERT INTO issues (id, title, body, status, created_by, assignee, created_at, updated_at, is_deleted) \
+         VALUES (?1, ?2, ?3, 'OPEN', ?4, ?5, ?6, ?6, 0)",
+        rusqlite::params![next_id, title, body, created_by, assignee, now],
+    )
+    .map_err(|e| format!("INSERT失敗: {}", e))?;
+
+    Ok(next_id)
+}
+
 // ─── LLM commands ─────────────────────────────────────────────────────────────
+
+#[tauri::command]
+pub async fn call_llm_oneshot(
+    endpoint: String,
+    api_key: String,
+    model: String,
+    prompt: String,
+) -> Result<String, String> {
+    let url = ensure_chat_completions_url(&normalize_endpoint(&endpoint));
+    let client = build_llm_client(&url)?;
+
+    let body = serde_json::json!({
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 1000
+    });
+
+    let mut req = client.post(&url).json(&body);
+    if !api_key.is_empty() {
+        req = req.header("Authorization", format!("Bearer {}", api_key));
+    }
+
+    let response = req.send().await.map_err(|e| format!("リクエスト失敗: {}", e))?;
+
+    if !response.status().is_success() {
+        let status = response.status().as_u16();
+        let text = response.text().await.unwrap_or_default();
+        return Err(format!("HTTP {}: {}", status, &text[..text.len().min(300)]));
+    }
+
+    let json: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|e| format!("JSONパース失敗: {}", e))?;
+
+    let content = json["choices"][0]["message"]["content"]
+        .as_str()
+        .unwrap_or("")
+        .to_string();
+
+    Ok(content)
+}
 
 #[tauri::command]
 pub async fn test_llm_connection(

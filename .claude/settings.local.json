@@ -23,7 +23,8 @@
       "Bash(wsl bash:*)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" --max-time 5 http://127.0.0.1:8088/v1/chat/completions -X POST -H \"Content-Type: application/json\" -d \"{\"\"model\"\":\"\"test\"\",\"\"messages\"\":[{\"\"role\"\":\"\"user\"\",\"\"content\"\":\"\"hi\"\"}],\"\"max_tokens\"\":1}\")",
       "Bash(curl -s --max-time 10 http://127.0.0.1:8088/v1/chat/completions -X POST -H \"Content-Type: application/json\" -d \"{\"\"model\"\":\"\"unsloth/Qwen3.5-9B-GGUF:Qwen3.5-9B-UD-Q4_K_XL.gguf\"\",\"\"messages\"\":[{\"\"role\"\":\"\"user\"\",\"\"content\"\":\"\"hi\"\"}],\"\"max_tokens\"\":10,\"\"stream\"\":true}\")",
-      "Bash(wsl sudo:*)"
+      "Bash(wsl sudo:*)",
+      "Bash(find /d/work_space/gijimemo -maxdepth 3 -not -path */node_modules/* -not -path */target/* -not -path */.git/* -type d)"
     ],
     "additionalDirectories": [
       "d:\\work_space\\gijimemo"

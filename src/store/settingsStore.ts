@@ -1,6 +1,35 @@
 import { create } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 
+// ─── Issuer DB フォルダ履歴 (localStorage) ───────────────────────────────────
+
+const ISSUER_HISTORY_KEY = "issuer_db_history";
+const MAX_ISSUER_HISTORY = 5;
+
+function loadIssuerHistory(): string[] {
+  try {
+    const raw = localStorage.getItem(ISSUER_HISTORY_KEY);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function persistIssuerHistory(paths: string[]) {
+  localStorage.setItem(ISSUER_HISTORY_KEY, JSON.stringify(paths));
+}
+
+export function addIssuerDbPath(folderPath: string): string[] {
+  const current = loadIssuerHistory().filter((p) => p !== folderPath);
+  const updated = [folderPath, ...current].slice(0, MAX_ISSUER_HISTORY);
+  persistIssuerHistory(updated);
+  return updated;
+}
+
+export function getIssuerDbHistory(): string[] {
+  return loadIssuerHistory();
+}
+
 export interface Settings {
   llm_api_key: string;
   llm_endpoint: string;

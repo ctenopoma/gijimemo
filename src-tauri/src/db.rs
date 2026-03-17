@@ -55,6 +55,14 @@ pub fn init_db(app: &AppHandle) -> Result<()> {
             content,
             tokenize='unicode61'
         );
+
+        CREATE TABLE IF NOT EXISTS card_images (
+            id TEXT PRIMARY KEY,
+            card_id TEXT NOT NULL,
+            data TEXT NOT NULL,
+            order_index INTEGER NOT NULL DEFAULT 0,
+            FOREIGN KEY (card_id) REFERENCES agenda_cards(id) ON DELETE CASCADE
+        );
     ")?;
 
     // Schema migrations (idempotent)

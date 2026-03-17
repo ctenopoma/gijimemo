@@ -23,6 +23,7 @@
     "core:window:allow-is-minimized",
     "core:window:allow-maximize",
     "core:window:allow-unmaximize",
-    "core:window:allow-is-decorated"
+    "core:window:allow-is-decorated",
+    "dialog:allow-open"
   ]
 }

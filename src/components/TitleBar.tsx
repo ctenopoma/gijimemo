@@ -1,11 +1,11 @@
-import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
+import { getCurrentWindow, LogicalSize, LogicalPosition } from "@tauri-apps/api/window";
 import { Minus, Square, X, Settings, Search, FileText, Pin, PinOff, Minimize2, Maximize2 } from "lucide-react";
 import { useAppStore } from "../store/appStore";
 import { useSettingsStore } from "../store/settingsStore";
 import { useState } from "react";
 
 const NORMAL_SIZE = { width: 860, height: 700 };
-const COMPACT_SIZE = { width: 480, height: 160 };
+const COMPACT_SIZE = { width: 360, height: 120 };
 
 export default function TitleBar() {
   const { currentPage, setPage } = useAppStore();
@@ -22,8 +22,22 @@ export default function TitleBar() {
   const toggleCompact = async () => {
     const next = !isCompact;
     setIsCompact(next);
-    const size = next ? COMPACT_SIZE : NORMAL_SIZE;
-    await appWindow.setSize(new LogicalSize(size.width, size.height));
+    const newSize = next ? COMPACT_SIZE : NORMAL_SIZE;
+
+    // 左下を固定したままサイズ変更するため、変更前の左下座標を取得
+    const physPos = await appWindow.outerPosition();
+    const physSize = await appWindow.outerSize();
+    const scale = await appWindow.scaleFactor();
+
+    // 左下の物理座標
+    const bottomY = physPos.y + physSize.height;
+
+    // 新しい論理座標（左下を固定）
+    const newLogicalX = physPos.x / scale;
+    const newLogicalY = (bottomY - newSize.height * scale) / scale;
+
+    await appWindow.setSize(new LogicalSize(newSize.width, newSize.height));
+    await appWindow.setPosition(new LogicalPosition(newLogicalX, newLogicalY));
   };
 
   const togglePin = async () => {

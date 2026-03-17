@@ -1,11 +1,13 @@
 import { useEffect, useState, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { Save, Clipboard, ClipboardList, Sparkles, FileX, Check } from "lucide-react";
+import { Save, Clipboard, ClipboardList, Sparkles, FileX, Check, ListTodo } from "lucide-react";
 import { useEditorStore } from "../store/editorStore";
 import { useSettingsStore } from "../store/settingsStore";
 import AgendaCardComponent from "../components/AgendaCard";
 import InsertZone from "../components/InsertZone";
+import IssuerModal from "../components/IssuerModal";
+import ActionItems from "../components/ActionItems";
 
 export default function EditorPage() {
   const {
@@ -26,6 +28,7 @@ export default function EditorPage() {
   const { settings } = useSettingsStore();
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
+  const [showIssuerModal, setShowIssuerModal] = useState(false);
 
 
   const handleSave = useCallback(async () => {
@@ -62,9 +65,12 @@ export default function EditorPage() {
       if (card.content) lines.push(card.content);
       lines.push("");
     }
-    if (meeting.action_items) {
+    const actionItems = meeting.action_items
+      ? meeting.action_items.split("\n").filter((s) => s.trim())
+      : [];
+    if (actionItems.length > 0) {
       lines.push("## アクションアイテム");
-      lines.push(meeting.action_items);
+      for (const item of actionItems) lines.push(`- ${item}`);
     }
     await navigator.clipboard.writeText(lines.join("\n"));
     setCopiedMd(true);
@@ -81,9 +87,12 @@ export default function EditorPage() {
       if (card.content) lines.push(card.content);
       lines.push("");
     }
-    if (meeting.action_items) {
+    const actionItems = meeting.action_items
+      ? meeting.action_items.split("\n").filter((s) => s.trim())
+      : [];
+    if (actionItems.length > 0) {
       lines.push("▼ アクションアイテム");
-      lines.push(meeting.action_items);
+      for (const item of actionItems) lines.push(`・${item}`);
     }
     await navigator.clipboard.writeText(lines.join("\n"));
     setCopiedText(true);
@@ -139,6 +148,13 @@ export default function EditorPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {showIssuerModal && (
+        <IssuerModal
+          meetingTitle={meeting.title}
+          meetingContent={buildFullText()}
+          onClose={() => setShowIssuerModal(false)}
+        />
+      )}
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200 bg-gray-50 shrink-0">
         <button
@@ -201,6 +217,14 @@ export default function EditorPage() {
           <Sparkles className="w-3.5 h-3.5" />
           {isStreaming ? "要約中…" : "LLM要約"}
         </button>
+        <button
+          onClick={() => setShowIssuerModal(true)}
+          className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors font-medium"
+          title="Issuerにタスクを登録"
+        >
+          <ListTodo className="w-3.5 h-3.5" />
+          Issue登録
+        </button>
       </div>
 
       {/* Main content */}
@@ -241,18 +265,10 @@ export default function EditorPage() {
         </div>
 
         {/* Action items */}
-        <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-            アクションアイテム（全体）
-          </label>
-          <textarea
-            placeholder="担当者・期日・内容を記入…"
-            value={meeting.action_items}
-            onChange={(e) => setMeeting({ action_items: e.target.value })}
-            rows={3}
-            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-gray-300 resize-y"
-          />
-        </div>
+        <ActionItems
+          value={meeting.action_items}
+          onChange={(v) => setMeeting({ action_items: v })}
+        />
 
         {/* LLM Result */}
         {(llmResult || isStreaming) && (
