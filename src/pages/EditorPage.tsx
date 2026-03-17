@@ -27,7 +27,6 @@ export default function EditorPage() {
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
 
-
   const handleSave = useCallback(async () => {
     try {
       await saveMeeting();

@@ -24,19 +24,22 @@ const defaultSettings: Settings = {
 
 interface SettingsStore {
   settings: Settings;
+  loaded: boolean;
   loadSettings: () => Promise<void>;
   saveSettings: (s: Settings) => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsStore>((set) => ({
   settings: defaultSettings,
+  loaded: false,
 
   loadSettings: async () => {
     try {
       const s = await invoke<Settings>("get_settings");
-      set({ settings: s });
+      set({ settings: s, loaded: true });
     } catch (e) {
       console.error("Failed to load settings:", e);
+      set({ loaded: true });
     }
   },
 

@@ -21,9 +21,13 @@ export default function App() {
     const appWindow = getCurrentWindow();
     let unlisten: (() => void) | undefined;
 
+    if (!settings.auto_transparent) {
+      document.documentElement.style.opacity = "1";
+      return;
+    }
+
     const setupListeners = async () => {
       unlisten = await appWindow.onFocusChanged(({ payload: focused }) => {
-        if (!settings.auto_transparent) return;
         if (focused) {
           document.documentElement.style.opacity = "1";
         } else {

@@ -5,21 +5,21 @@ import { Save, Wifi, Eye, EyeOff, Check } from "lucide-react";
 import { useSettingsStore, Settings } from "../store/settingsStore";
 
 export default function SettingsPage() {
-  const { settings, saveSettings } = useSettingsStore();
+  const { settings, loaded, saveSettings } = useSettingsStore();
   const [local, setLocal] = useState<Settings>({ ...settings });
   const [showKey, setShowKey] = useState(false);
   const [testResult, setTestResult] = useState<string | null>(null);
   const [testing, setTesting] = useState(false);
   const [saved, setSaved] = useState(false);
-  const initialized = useRef(false);
+  const syncedFromDb = useRef(false);
 
   // Sync when settings load from DB after mount
   useEffect(() => {
-    if (!initialized.current && settings.llm_endpoint !== "") {
+    if (loaded && !syncedFromDb.current) {
       setLocal({ ...settings });
-      initialized.current = true;
+      syncedFromDb.current = true;
     }
-  }, [settings]);
+  }, [settings, loaded]);
 
   const patch = (key: keyof Settings, value: Settings[keyof Settings]) => {
     setLocal((s) => ({ ...s, [key]: value }));

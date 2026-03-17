@@ -1,26 +1,22 @@
+import { useCallback } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Minus, Square, X, Settings, Search, FileText, Pin, PinOff } from "lucide-react";
 import { useAppStore } from "../store/appStore";
 import { useSettingsStore } from "../store/settingsStore";
-import { useState } from "react";
 
 export default function TitleBar() {
   const { currentPage, setPage } = useAppStore();
   const { settings, saveSettings } = useSettingsStore();
-  const [alwaysOnTop, setAlwaysOnTop] = useState(settings.always_on_top);
 
-  const appWindow = getCurrentWindow();
+  const handleMinimize = useCallback(() => getCurrentWindow().minimize(), []);
+  const handleMaximize = useCallback(() => getCurrentWindow().toggleMaximize(), []);
+  const handleClose = useCallback(() => getCurrentWindow().close(), []);
 
-  const handleMinimize = () => appWindow.minimize();
-  const handleMaximize = () => appWindow.toggleMaximize();
-  const handleClose = () => appWindow.close();
-
-  const togglePin = async () => {
-    const next = !alwaysOnTop;
-    setAlwaysOnTop(next);
-    await appWindow.setAlwaysOnTop(next);
+  const togglePin = useCallback(async () => {
+    const next = !settings.always_on_top;
+    await getCurrentWindow().setAlwaysOnTop(next);
     await saveSettings({ ...settings, always_on_top: next });
-  };
+  }, [settings, saveSettings]);
 
   return (
     <div
@@ -86,13 +82,13 @@ export default function TitleBar() {
         <button
           onClick={togglePin}
           className={`p-1.5 rounded transition-colors ${
-            alwaysOnTop
+            settings.always_on_top
               ? "text-blue-400 hover:text-blue-300"
               : "text-gray-400 hover:text-gray-200"
           }`}
-          title={alwaysOnTop ? "常に最前面 ON" : "常に最前面 OFF"}
+          title={settings.always_on_top ? "常に最前面 ON" : "常に最前面 OFF"}
         >
-          {alwaysOnTop ? <Pin className="w-4 h-4" /> : <PinOff className="w-4 h-4" />}
+          {settings.always_on_top ? <Pin className="w-4 h-4" /> : <PinOff className="w-4 h-4" />}
         </button>
       </div>
     </div>

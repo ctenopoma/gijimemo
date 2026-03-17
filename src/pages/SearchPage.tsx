@@ -68,15 +68,23 @@ export default function SearchPage() {
   }, [query, handleSearch]);
 
   const handleOpen = async (id: string) => {
-    await loadMeeting(id);
-    setPage("editor");
+    try {
+      await loadMeeting(id);
+      setPage("editor");
+    } catch (e) {
+      alert("議事録の読み込みに失敗しました: " + e);
+    }
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm("この議事録を削除しますか？")) return;
-    await invoke("delete_meeting", { id });
-    await fetchAll();
+    try {
+      await invoke("delete_meeting", { id });
+      await fetchAll();
+    } catch (e) {
+      alert("削除に失敗しました: " + e);
+    }
   };
 
   const handleNew = () => {

@@ -232,8 +232,8 @@ pub fn get_meeting(id: String) -> Result<MeetingWithCards, String> {
             order_index: row.get(4)?,
         })
     }).map_err(|e| e.to_string())?
-    .filter_map(|r| r.ok())
-    .collect();
+    .collect::<rusqlite::Result<Vec<_>>>()
+    .map_err(|e| e.to_string())?;
 
     Ok(MeetingWithCards { meeting, cards })
 }
@@ -260,8 +260,8 @@ pub fn get_meetings_list() -> Result<Vec<MeetingListItem>, String> {
             card_count: row.get(4)?,
         })
     }).map_err(|e| e.to_string())?
-    .filter_map(|r| r.ok())
-    .collect();
+    .collect::<rusqlite::Result<Vec<_>>>()
+    .map_err(|e| e.to_string())?;
 
     Ok(items)
 }
@@ -269,12 +269,14 @@ pub fn get_meetings_list() -> Result<Vec<MeetingListItem>, String> {
 #[tauri::command]
 pub fn delete_meeting(id: String) -> Result<(), String> {
     let db = DB.get().ok_or("DB not initialized")?;
-    let conn = db.lock().map_err(|e| e.to_string())?;
+    let mut conn = db.lock().map_err(|e| e.to_string())?;
 
-    conn.execute("DELETE FROM meetings WHERE id=?1", [&id])
+    let tx = conn.transaction().map_err(|e| e.to_string())?;
+    tx.execute("DELETE FROM meetings WHERE id=?1", [&id])
         .map_err(|e| e.to_string())?;
-    conn.execute("DELETE FROM meetings_fts WHERE meeting_id=?1", [&id])
+    tx.execute("DELETE FROM meetings_fts WHERE meeting_id=?1", [&id])
         .map_err(|e| e.to_string())?;
+    tx.commit().map_err(|e| e.to_string())?;
 
     Ok(())
 }
@@ -307,8 +309,8 @@ pub fn search_meetings(query: String) -> Result<Vec<MeetingListItem>, String> {
             card_count: row.get(4)?,
         })
     }).map_err(|e| e.to_string())?
-    .filter_map(|r| r.ok())
-    .collect();
+    .collect::<rusqlite::Result<Vec<_>>>()
+    .map_err(|e| e.to_string())?;
 
     Ok(items)
 }
