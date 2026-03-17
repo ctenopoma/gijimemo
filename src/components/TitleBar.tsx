@@ -1,19 +1,30 @@
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Minus, Square, X, Settings, Search, FileText, Pin, PinOff } from "lucide-react";
+import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
+import { Minus, Square, X, Settings, Search, FileText, Pin, PinOff, Minimize2, Maximize2 } from "lucide-react";
 import { useAppStore } from "../store/appStore";
 import { useSettingsStore } from "../store/settingsStore";
 import { useState } from "react";
+
+const NORMAL_SIZE = { width: 860, height: 700 };
+const COMPACT_SIZE = { width: 480, height: 160 };
 
 export default function TitleBar() {
   const { currentPage, setPage } = useAppStore();
   const { settings, saveSettings } = useSettingsStore();
   const [alwaysOnTop, setAlwaysOnTop] = useState(settings.always_on_top);
+  const [isCompact, setIsCompact] = useState(false);
 
   const appWindow = getCurrentWindow();
 
   const handleMinimize = () => appWindow.minimize();
   const handleMaximize = () => appWindow.toggleMaximize();
   const handleClose = () => appWindow.close();
+
+  const toggleCompact = async () => {
+    const next = !isCompact;
+    setIsCompact(next);
+    const size = next ? COMPACT_SIZE : NORMAL_SIZE;
+    await appWindow.setSize(new LogicalSize(size.width, size.height));
+  };
 
   const togglePin = async () => {
     const next = !alwaysOnTop;
@@ -83,6 +94,17 @@ export default function TitleBar() {
         >
           <Settings className="w-4 h-4" />
         </NavButton>
+        <button
+          onClick={toggleCompact}
+          className={`p-1.5 rounded transition-colors ${
+            isCompact
+              ? "text-orange-400 hover:text-orange-300"
+              : "text-gray-400 hover:text-gray-200"
+          }`}
+          title={isCompact ? "元のサイズに戻す" : "コンパクトにする"}
+        >
+          {isCompact ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+        </button>
         <button
           onClick={togglePin}
           className={`p-1.5 rounded transition-colors ${
