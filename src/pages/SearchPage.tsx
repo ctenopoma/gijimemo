@@ -76,7 +76,7 @@ export default function SearchPage() {
     e.stopPropagation();
     if (!confirm("この議事録を削除しますか？")) return;
     await invoke("delete_meeting", { id });
-    fetchAll();
+    await fetchAll();
   };
 
   const handleNew = () => {

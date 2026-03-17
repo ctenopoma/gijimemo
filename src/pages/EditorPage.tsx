@@ -20,7 +20,6 @@ export default function EditorPage() {
     newDocument,
     saveMeeting,
     setLlmResult,
-    appendLlmResult,
     setIsStreaming,
   } = useEditorStore();
 
@@ -28,31 +27,6 @@ export default function EditorPage() {
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
 
-  // Persistent LLM stream listener — lives for the entire component lifetime.
-  // Do NOT unlisten on done; only unlisten on unmount so repeated summaries work.
-  useEffect(() => {
-    let unlisten: (() => void) | null = null;
-
-    listen<{ chunk?: string; done?: boolean; error?: string }>(
-      "llm-stream-chunk",
-      (event) => {
-        if (event.payload.done) {
-          setIsStreaming(false);
-        } else if (event.payload.error) {
-          setIsStreaming(false);
-          alert("LLM要約エラー: " + event.payload.error);
-        } else if (event.payload.chunk) {
-          appendLlmResult(event.payload.chunk);
-        }
-      }
-    ).then((fn) => {
-      unlisten = fn;
-    });
-
-    return () => {
-      unlisten?.();
-    };
-  }, [appendLlmResult, setIsStreaming]);
 
   const handleSave = useCallback(async () => {
     try {
@@ -117,8 +91,8 @@ export default function EditorPage() {
   };
 
   const handleSummarize = async () => {
-    if (!settings.llm_endpoint) {
-      alert("設定画面でLLMのエンドポイントを設定してください。");
+    if (!settings.llm_endpoint || !settings.llm_model) {
+      alert("設定画面でエンドポイントとモデル名を設定し、「設定を保存」または「接続確認」を押してください。");
       return;
     }
     const fullContent = buildFullText();
@@ -129,6 +103,24 @@ export default function EditorPage() {
     setLlmResult("");
     setIsStreaming(true);
 
+    // Register a fresh listener for this summarization only.
+    // Unlisten as soon as done/error so stale listeners never accumulate.
+    const unlisten = await listen<{ chunk?: string; done?: boolean; error?: string }>(
+      "llm-stream-chunk",
+      (event) => {
+        if (event.payload.done) {
+          setIsStreaming(false);
+          unlisten();
+        } else if (event.payload.error) {
+          setIsStreaming(false);
+          unlisten();
+          alert("LLM要約エラー: " + event.payload.error);
+        } else if (event.payload.chunk) {
+          useEditorStore.getState().appendLlmResult(event.payload.chunk);
+        }
+      }
+    );
+
     try {
       await invoke("generate_summary_stream", {
         endpoint: settings.llm_endpoint,
@@ -138,7 +130,10 @@ export default function EditorPage() {
       });
     } catch (e) {
       setIsStreaming(false);
-      alert("LLM要約に失敗しました: " + e);
+      unlisten();
+      alert(
+        `LLM要約に失敗しました\n\nエンドポイント: ${settings.llm_endpoint}\nモデル: ${settings.llm_model}\n\nエラー: ${e}`
+      );
     }
   };
 
@@ -147,7 +142,10 @@ export default function EditorPage() {
       {/* Toolbar */}
       <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200 bg-gray-50 shrink-0">
         <button
-          onClick={newDocument}
+          onClick={() => {
+            if (isDirty && !confirm("未保存の変更があります。新規作成しますか？")) return;
+            newDocument();
+          }}
           className="flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors"
           title="新規作成"
         >

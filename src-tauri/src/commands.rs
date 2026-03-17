@@ -25,6 +25,17 @@ fn normalize_endpoint(endpoint: &str) -> String {
         .replace("://localhost", "://127.0.0.1")
 }
 
+// If the user typed a base URL like "http://host/v1", auto-append "/chat/completions".
+// Accepts any URL already ending in "/chat/completions" unchanged.
+fn ensure_chat_completions_url(endpoint: &str) -> String {
+    let trimmed = endpoint.trim_end_matches('/');
+    if trimmed.ends_with("/chat/completions") {
+        trimmed.to_string()
+    } else {
+        format!("{}/chat/completions", trimmed)
+    }
+}
+
 // ─── Data structs ────────────────────────────────────────────────────────────
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -310,7 +321,7 @@ pub async fn test_llm_connection(
     api_key: String,
     model: String,
 ) -> Result<String, String> {
-    let url = normalize_endpoint(&endpoint);
+    let url = ensure_chat_completions_url(&normalize_endpoint(&endpoint));
     let client = build_llm_client(&url)?;
 
     let body = serde_json::json!({
@@ -364,7 +375,7 @@ pub async fn generate_summary_stream(
 ) -> Result<(), String> {
     use futures_util::StreamExt;
 
-    let endpoint = normalize_endpoint(&endpoint);
+    let endpoint = ensure_chat_completions_url(&normalize_endpoint(&endpoint));
     let client = build_llm_client(&endpoint)?;
 
     let body = serde_json::json!({

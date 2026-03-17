@@ -43,6 +43,9 @@ export default function SettingsPage() {
         model: local.llm_model,
       });
       setTestResult("✅ " + result);
+      // Auto-save on success so the editor uses the same values
+      await saveSettings(local);
+      await getCurrentWindow().setAlwaysOnTop(local.always_on_top);
     } catch (e) {
       setTestResult("❌ " + e);
     } finally {
@@ -68,7 +71,7 @@ export default function SettingsPage() {
             type="text"
             value={local.llm_endpoint}
             onChange={(e) => patch("llm_endpoint", e.target.value)}
-            placeholder="http://127.0.0.1:8080/v1/chat/completions"
+            placeholder="http://127.0.0.1:8080/v1  （または .../v1/chat/completions）"
             className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono"
           />
           <p className="text-xs text-gray-400 mt-1">

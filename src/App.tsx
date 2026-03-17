@@ -20,7 +20,6 @@ export default function App() {
   useEffect(() => {
     const appWindow = getCurrentWindow();
     let unlisten: (() => void) | undefined;
-    let unlistenBlur: (() => void) | undefined;
 
     const setupListeners = async () => {
       unlisten = await appWindow.onFocusChanged(({ payload: focused }) => {
@@ -37,7 +36,6 @@ export default function App() {
 
     return () => {
       unlisten?.();
-      unlistenBlur?.();
     };
   }, [settings.auto_transparent, settings.inactive_opacity]);
 

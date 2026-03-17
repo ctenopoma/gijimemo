@@ -52,7 +52,6 @@ interface EditorStore {
   setMeeting: (m: Partial<Meeting>) => void;
   setCards: (cards: AgendaCard[]) => void;
   addCardAfter: (afterIndex: number) => void;
-  addCardBefore: (beforeIndex: number) => void;
   updateCard: (id: string, patch: Partial<AgendaCard>) => void;
   removeCard: (id: string) => void;
   newDocument: () => void;
@@ -81,15 +80,6 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
       const cards = [...s.cards];
       const newC = newCard(s.meeting.id, afterIndex + 1);
       cards.splice(afterIndex + 1, 0, newC);
-      const reindexed = cards.map((c, i) => ({ ...c, order_index: i }));
-      return { cards: reindexed, isDirty: true };
-    }),
-
-  addCardBefore: (beforeIndex) =>
-    set((s) => {
-      const cards = [...s.cards];
-      const newC = newCard(s.meeting.id, beforeIndex);
-      cards.splice(beforeIndex, 0, newC);
       const reindexed = cards.map((c, i) => ({ ...c, order_index: i }));
       return { cards: reindexed, isDirty: true };
     }),
