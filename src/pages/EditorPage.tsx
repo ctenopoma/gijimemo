@@ -136,6 +136,7 @@ export default function EditorPage() {
     const fullContent = buildFullText();
     const prompt = settings.prompt_template
       .replace("{title}", meeting.title || "（無題）")
+      .replace("{datetime}", meeting.held_at || "")
       .replace("{content}", fullContent);
 
     setLlmResult("");
