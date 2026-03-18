@@ -1,4 +1,4 @@
-use tauri::{Manager, WebviewWindow};
+use tauri::Manager;
 
 mod db;
 mod commands;
@@ -6,18 +6,8 @@ mod commands;
 pub use commands::*;
 
 #[tauri::command]
-async fn set_always_on_top(window: WebviewWindow, on_top: bool) -> Result<(), String> {
+async fn set_always_on_top(window: tauri::WebviewWindow, on_top: bool) -> Result<(), String> {
     window.set_always_on_top(on_top).map_err(|e| e.to_string())
-}
-
-#[tauri::command]
-async fn set_window_opacity(window: WebviewWindow, opacity: f64) -> Result<(), String> {
-    // Tauri v2 does not expose set_opacity directly on WebviewWindow via API in all platforms
-    // We handle opacity via CSS on the frontend side instead
-    // This command is kept as a hook for future platform-specific implementations
-    let _ = opacity;
-    let _ = window;
-    Ok(())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -28,7 +18,10 @@ pub fn run() {
         .setup(|app| {
             // Initialize database
             let app_handle = app.handle().clone();
-            db::init_db(&app_handle).expect("Failed to initialize database");
+            let app_dir = app_handle.path().app_data_dir().expect("Failed to get app data dir");
+            let db_path = app_dir.join("gijimemo.db");
+            let app_db = db::init_db(db_path).expect("Failed to initialize database");
+            app.manage(app_db);
 
             // Set main window properties
             let window = app.get_webview_window("main").unwrap();
@@ -38,7 +31,6 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             set_always_on_top,
-            set_window_opacity,
             commands::get_settings,
             commands::save_settings,
             commands::save_meeting,

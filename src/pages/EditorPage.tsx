@@ -1,13 +1,15 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { Save, Clipboard, ClipboardList, Sparkles, FileX, Check, ListTodo } from "lucide-react";
+import { Save, Clipboard, ClipboardList, Sparkles, FileX, Check, ListTodo, Copy } from "lucide-react";
 import { useEditorStore } from "../store/editorStore";
 import { useSettingsStore } from "../store/settingsStore";
 import AgendaCardComponent from "../components/AgendaCard";
 import InsertZone from "../components/InsertZone";
 import IssuerModal from "../components/IssuerModal";
 import ActionItems from "../components/ActionItems";
+
+const AUTO_SAVE_DELAY = 5000; // 5 seconds
 
 export default function EditorPage() {
   const {
@@ -28,8 +30,9 @@ export default function EditorPage() {
   const { settings } = useSettingsStore();
   const [copiedMd, setCopiedMd] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
+  const [copiedLlm, setCopiedLlm] = useState(false);
   const [showIssuerModal, setShowIssuerModal] = useState(false);
-
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSave = useCallback(async () => {
     try {
@@ -50,6 +53,25 @@ export default function EditorPage() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [handleSave]);
+
+  // Debounced auto-save
+  useEffect(() => {
+    if (!isDirty || isSaving) return;
+
+    // Only auto-save if the meeting has been saved at least once (has an ID)
+    const currentMeetingId = useEditorStore.getState().meeting.id;
+    if (!currentMeetingId) return;
+
+    autoSaveTimer.current = setTimeout(() => {
+      useEditorStore.getState().saveMeeting().catch(() => {
+        // Silently fail on auto-save; user can manually save
+      });
+    }, AUTO_SAVE_DELAY);
+
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [isDirty, isSaving, meeting, cards]);
 
   const buildFullText = () => {
     return cards.map((c) => `${c.title}\n${c.content}`).join("\n\n");
@@ -99,6 +121,13 @@ export default function EditorPage() {
     setTimeout(() => setCopiedText(false), 1500);
   };
 
+  const copyLlmResult = async () => {
+    if (!llmResult) return;
+    await navigator.clipboard.writeText(llmResult);
+    setCopiedLlm(true);
+    setTimeout(() => setCopiedLlm(false), 1500);
+  };
+
   const handleSummarize = async () => {
     if (!settings.llm_endpoint || !settings.llm_model) {
       alert("設定画面でエンドポイントとモデル名を設定し、「設定を保存」または「接続確認」を押してください。");
@@ -112,8 +141,6 @@ export default function EditorPage() {
     setLlmResult("");
     setIsStreaming(true);
 
-    // Register a fresh listener for this summarization only.
-    // Unlisten as soon as done/error so stale listeners never accumulate.
     const unlisten = await listen<{ chunk?: string; done?: boolean; error?: string }>(
       "llm-stream-chunk",
       (event) => {
@@ -279,12 +306,28 @@ export default function EditorPage() {
               {isStreaming && (
                 <span className="text-xs text-purple-500 animate-pulse">生成中…</span>
               )}
-              <button
-                onClick={() => setLlmResult("")}
-                className="ml-auto text-xs text-purple-400 hover:text-purple-600"
-              >
-                閉じる
-              </button>
+              <div className="ml-auto flex items-center gap-2">
+                {llmResult && !isStreaming && (
+                  <button
+                    onClick={copyLlmResult}
+                    className={`flex items-center gap-1 text-xs transition-colors ${
+                      copiedLlm
+                        ? "text-green-600"
+                        : "text-purple-400 hover:text-purple-600"
+                    }`}
+                    title="要約をコピー"
+                  >
+                    {copiedLlm ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedLlm ? "コピー済み" : "コピー"}
+                  </button>
+                )}
+                <button
+                  onClick={() => setLlmResult("")}
+                  className="text-xs text-purple-400 hover:text-purple-600"
+                >
+                  閉じる
+                </button>
+              </div>
             </div>
             <pre className="px-3 py-3 text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto max-h-64">
               {llmResult}

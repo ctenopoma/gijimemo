@@ -1,16 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Search, FileText, Trash2, Plus } from "lucide-react";
-import { useEditorStore } from "../store/editorStore";
+import { useEditorStore, MeetingListItem } from "../store/editorStore";
 import { useAppStore } from "../store/appStore";
-
-interface MeetingListItem {
-  id: string;
-  title: string;
-  held_at: string;
-  updated_at: string;
-  card_count: number;
-}
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -68,6 +60,8 @@ export default function SearchPage() {
   }, [query, handleSearch]);
 
   const handleOpen = async (id: string) => {
+    const { isDirty } = useEditorStore.getState();
+    if (isDirty && !confirm("未保存の変更があります。別の議事録を開きますか？")) return;
     await loadMeeting(id);
     setPage("editor");
   };
