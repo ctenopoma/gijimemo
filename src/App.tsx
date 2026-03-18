@@ -16,6 +16,15 @@ export default function App() {
     loadSettings();
   }, [loadSettings]);
 
+  // Apply dark mode class to <html>
+  useEffect(() => {
+    if (settings.dark_mode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [settings.dark_mode]);
+
   // Focus/Blur → auto opacity control
   useEffect(() => {
     const appWindow = getCurrentWindow();
@@ -40,7 +49,7 @@ export default function App() {
   }, [settings.auto_transparent, settings.inactive_opacity]);
 
   return (
-    <div className="flex flex-col h-screen bg-white/95 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-200 shadow-2xl">
+    <div className="flex flex-col h-screen bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-2xl">
       <TitleBar />
       <div className="flex-1 overflow-hidden">
         {currentPage === "editor" && <EditorPage />}

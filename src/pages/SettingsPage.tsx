@@ -55,16 +55,16 @@ export default function SettingsPage() {
 
   return (
     <div className="h-full overflow-y-auto px-4 py-4 space-y-5">
-      <h2 className="text-base font-bold text-gray-700">設定</h2>
+      <h2 className="text-base font-bold text-gray-700 dark:text-gray-200">設定</h2>
 
       {/* LLM Settings */}
       <section className="space-y-3">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider border-b pb-1">
+        <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-gray-700 pb-1">
           LLM 接続設定
         </h3>
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
             エンドポイント URL
           </label>
           <input
@@ -72,15 +72,15 @@ export default function SettingsPage() {
             value={local.llm_endpoint}
             onChange={(e) => patch("llm_endpoint", e.target.value)}
             placeholder="http://127.0.0.1:8080/v1  （または .../v1/chat/completions）"
-            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono"
+            className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 font-mono placeholder:text-gray-300 dark:placeholder:text-gray-600"
           />
-          <p className="text-xs text-gray-400 mt-1">
-            ローカルLLMの場合は <code className="bg-gray-100 px-1 rounded">localhost</code> より <code className="bg-gray-100 px-1 rounded">127.0.0.1</code> を推奨（IPv6解決問題の回避）。末尾まで含めて入力してください。
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+            ローカルLLMの場合は <code className="bg-gray-100 dark:bg-gray-700 dark:text-gray-300 px-1 rounded">localhost</code> より <code className="bg-gray-100 dark:bg-gray-700 dark:text-gray-300 px-1 rounded">127.0.0.1</code> を推奨（IPv6解決問題の回避）。末尾まで含めて入力してください。
           </p>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
             API Key
           </label>
           <div className="relative">
@@ -89,11 +89,11 @@ export default function SettingsPage() {
               value={local.llm_api_key}
               onChange={(e) => patch("llm_api_key", e.target.value)}
               placeholder="sk-..."
-              className="w-full px-3 py-2 pr-9 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono"
+              className="w-full px-3 py-2 pr-9 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 font-mono placeholder:text-gray-300 dark:placeholder:text-gray-600"
             />
             <button
               onClick={() => setShowKey((v) => !v)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             >
               {showKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -101,7 +101,7 @@ export default function SettingsPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
             モデル名
           </label>
           <input
@@ -109,14 +109,14 @@ export default function SettingsPage() {
             value={local.llm_model}
             onChange={(e) => patch("llm_model", e.target.value)}
             placeholder="gpt-4o-mini"
-            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono"
+            className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 font-mono placeholder:text-gray-300 dark:placeholder:text-gray-600"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
             プロンプトテンプレート{" "}
-            <span className="text-gray-400 font-normal">
+            <span className="text-gray-400 dark:text-gray-500 font-normal">
               ({"{title}"} {"{content}"} が使えます)
             </span>
           </label>
@@ -124,21 +124,21 @@ export default function SettingsPage() {
             value={local.prompt_template}
             onChange={(e) => patch("prompt_template", e.target.value)}
             rows={8}
-            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono resize-y"
+            className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 font-mono resize-y placeholder:text-gray-300 dark:placeholder:text-gray-600"
           />
         </div>
 
         <button
           onClick={handleTest}
           disabled={testing || !local.llm_endpoint}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 border border-blue-200 rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-lg transition-colors disabled:opacity-50"
         >
           <Wifi className="w-4 h-4" />
           {testing ? "確認中…" : "LLMへの接続確認"}
         </button>
 
         {testResult && (
-          <p className="text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 font-mono whitespace-pre-wrap">
+          <p className="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 font-mono whitespace-pre-wrap">
             {testResult}
           </p>
         )}
@@ -146,7 +146,7 @@ export default function SettingsPage() {
 
       {/* Window Settings */}
       <section className="space-y-3">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider border-b pb-1">
+        <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-gray-700 pb-1">
           ウィンドウ設定
         </h3>
 
@@ -157,7 +157,7 @@ export default function SettingsPage() {
             onChange={(e) => patch("always_on_top", e.target.checked)}
             className="w-4 h-4 accent-blue-500"
           />
-          <span className="text-sm text-gray-700">常に最前面に表示</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300">常に最前面に表示</span>
         </label>
 
         <label className="flex items-center gap-3 cursor-pointer">
@@ -167,12 +167,12 @@ export default function SettingsPage() {
             onChange={(e) => patch("auto_transparent", e.target.checked)}
             className="w-4 h-4 accent-blue-500"
           />
-          <span className="text-sm text-gray-700">非アクティブ時に半透明化</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300">非アクティブ時に半透明化</span>
         </label>
 
         {local.auto_transparent && (
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
               非アクティブ時の不透明度:{" "}
               <span className="font-bold">{Math.round(local.inactive_opacity * 100)}%</span>
             </label>
@@ -194,7 +194,7 @@ export default function SettingsPage() {
         onClick={handleSave}
         className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors font-medium ${
           saved
-            ? "text-green-700 bg-green-100"
+            ? "text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/30"
             : "text-white bg-blue-600 hover:bg-blue-500"
         }`}
       >

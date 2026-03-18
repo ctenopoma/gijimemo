@@ -95,17 +95,17 @@ export default function SearchPage() {
   return (
     <div className="flex flex-col h-full">
       {/* Search bar */}
-      <div className="px-3 py-3 border-b border-gray-200 bg-gray-50 shrink-0">
+      <div className="px-3 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <input
               ref={searchRef}
               type="text"
               placeholder="議事録を検索… (タイトル・メモ内容)"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 placeholder:text-gray-400 dark:placeholder:text-gray-600"
             />
           </div>
           <button
@@ -121,18 +121,18 @@ export default function SearchPage() {
       {/* List */}
       <div className="flex-1 overflow-y-auto">
         {loading ? (
-          <div className="flex items-center justify-center h-24 text-sm text-gray-400">
+          <div className="flex items-center justify-center h-24 text-sm text-gray-400 dark:text-gray-500">
             読み込み中…
           </div>
         ) : items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 text-gray-400 gap-2">
+          <div className="flex flex-col items-center justify-center h-32 text-gray-400 dark:text-gray-500 gap-2">
             <FileText className="w-8 h-8 opacity-30" />
             <p className="text-sm">
               {query ? "検索結果がありません" : "議事録がありません"}
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-gray-100 dark:divide-gray-700">
             {items.map((item) => {
               const isActive = item.id === meeting.id;
               return (
@@ -141,24 +141,24 @@ export default function SearchPage() {
                   onClick={() => handleOpen(item.id)}
                   className={`flex items-center gap-3 px-4 py-3 cursor-pointer group transition-colors ${
                     isActive
-                      ? "bg-blue-50 border-l-2 border-blue-400"
-                      : "hover:bg-gray-50 border-l-2 border-transparent"
+                      ? "bg-blue-50 dark:bg-blue-900/20 border-l-2 border-blue-400 dark:border-blue-500"
+                      : "hover:bg-gray-50 dark:hover:bg-gray-800 border-l-2 border-transparent"
                   }`}
                 >
-                  <FileText className={`w-5 h-5 shrink-0 ${isActive ? "text-blue-400" : "text-gray-300"}`} />
+                  <FileText className={`w-5 h-5 shrink-0 ${isActive ? "text-blue-400" : "text-gray-300 dark:text-gray-600"}`} />
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium truncate ${isActive ? "text-blue-700" : "text-gray-800"}`}>
+                    <p className={`text-sm font-medium truncate ${isActive ? "text-blue-700 dark:text-blue-300" : "text-gray-800 dark:text-gray-200"}`}>
                       {item.title || "（無題）"}
-                      {isActive && <span className="ml-2 text-xs text-blue-400 font-normal">編集中</span>}
+                      {isActive && <span className="ml-2 text-xs text-blue-400 dark:text-blue-400 font-normal">編集中</span>}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                       {item.held_at && `${item.held_at} · `}
                       論点 {item.card_count}件 · 更新 {formatDate(item.updated_at)}
                     </p>
                   </div>
                   <button
                     onClick={(e) => handleDelete(item.id, e)}
-                    className="p-1.5 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-colors rounded"
+                    className="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 transition-colors rounded"
                     title="削除"
                   >
                     <Trash2 className="w-4 h-4" />

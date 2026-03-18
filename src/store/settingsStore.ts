@@ -38,6 +38,7 @@ export interface Settings {
   always_on_top: boolean;
   auto_transparent: boolean;
   inactive_opacity: number;
+  dark_mode: boolean;
 }
 
 const defaultSettings: Settings = {
@@ -49,6 +50,7 @@ const defaultSettings: Settings = {
   always_on_top: true,
   auto_transparent: true,
   inactive_opacity: 0.6,
+  dark_mode: false,
 };
 
 interface SettingsStore {

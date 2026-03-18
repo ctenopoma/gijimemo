@@ -57,20 +57,21 @@ export default function AgendaCardComponent({ card, index, totalCards }: Props) 
   return (
     <>
       <div
-        className="group border border-gray-200 rounded-lg bg-white hover:border-gray-300 transition-colors overflow-hidden"
+        className="group border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-colors overflow-hidden"
         onPaste={handlePaste}
       >
         {/* Card header */}
         <div
-          className={`flex items-center gap-2 px-3 py-2 bg-gray-50 cursor-pointer select-none ${isOpen ? "border-b border-gray-100" : ""}`}
+          className={`flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-750 cursor-pointer select-none ${isOpen ? "border-b border-gray-100 dark:border-gray-700" : ""}`}
+          style={isOpen ? undefined : undefined}
           onClick={() => setIsOpen((v) => !v)}
         >
-          <span className="text-gray-300 shrink-0">
+          <span className="text-gray-300 dark:text-gray-600 shrink-0">
             {isOpen
               ? <ChevronDown className="w-3.5 h-3.5" />
               : <ChevronRight className="w-3.5 h-3.5" />}
           </span>
-          <span className="text-xs font-bold text-gray-300 w-5 text-center shrink-0">
+          <span className="text-xs font-bold text-gray-300 dark:text-gray-600 w-5 text-center shrink-0">
             {index + 1}
           </span>
           <input
@@ -79,12 +80,12 @@ export default function AgendaCardComponent({ card, index, totalCards }: Props) 
             value={card.title}
             onChange={(e) => updateCard(card.id, { title: e.target.value })}
             onClick={(e) => e.stopPropagation()}
-            className="flex-1 text-sm font-medium bg-transparent border-none focus:outline-none placeholder:text-gray-300 text-gray-700"
+            className="flex-1 text-sm font-medium bg-transparent border-none focus:outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600 text-gray-700 dark:text-gray-200"
           />
           {totalCards > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); removeCard(card.id); }}
-              className="p-1 text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 rounded transition-colors shrink-0"
+              className="p-1 text-gray-300 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-400 opacity-0 group-hover:opacity-100 rounded transition-colors shrink-0"
               title="削除"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -101,7 +102,7 @@ export default function AgendaCardComponent({ card, index, totalCards }: Props) 
               value={card.content}
               onChange={(e) => updateCard(card.id, { content: e.target.value })}
               rows={3}
-              className="w-full px-3 py-2 text-sm text-gray-700 bg-white border-none focus:outline-none placeholder:text-gray-300 resize-none leading-relaxed"
+              className="w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border-none focus:outline-none placeholder:text-gray-300 dark:placeholder:text-gray-600 resize-none leading-relaxed"
               style={{ minHeight: "72px" }}
             />
 
@@ -112,7 +113,7 @@ export default function AgendaCardComponent({ card, index, totalCards }: Props) 
                     <img
                       src={img.data}
                       alt=""
-                      className="max-h-32 max-w-xs rounded border border-gray-200 cursor-zoom-in object-contain"
+                      className="max-h-32 max-w-xs rounded border border-gray-200 dark:border-gray-700 cursor-zoom-in object-contain"
                       onClick={() => setZoomedImage(img.data)}
                     />
                     <button
