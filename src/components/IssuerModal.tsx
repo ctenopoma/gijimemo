@@ -196,11 +196,11 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative z-10 w-full max-w-xl mx-4 bg-white rounded-xl shadow-2xl flex flex-col max-h-[92vh]">
+      <div className="relative z-10 w-full max-w-xl mx-4 bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 shrink-0">
-          <h2 className="text-sm font-semibold text-gray-800">Issuerに登録</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
+          <h2 className="text-sm font-semibold text-gray-800 dark:text-gray-100">Issuerに登録</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -210,8 +210,8 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
           <div
             className={`mx-4 mt-3 px-3 py-2 rounded-lg text-xs font-medium whitespace-pre-wrap shrink-0 ${
               toast.type === "success"
-                ? "bg-green-50 text-green-700 border border-green-200"
-                : "bg-red-50 text-red-700 border border-red-200"
+                ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700"
+                : "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700"
             }`}
           >
             {toast.message}
@@ -222,7 +222,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
           {/* DB folder */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
               保存先DB フォルダ
             </label>
             <div className="flex gap-2">
@@ -232,24 +232,24 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                   value={dbFolder}
                   onChange={(e) => setDbFolder(e.target.value)}
                   placeholder="フォルダパスを選択…"
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-gray-300 pr-8"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 placeholder:text-gray-300 dark:placeholder:text-gray-600 pr-8"
                 />
                 {history.length > 0 && (
                   <button
                     onClick={() => setShowHistory((v) => !v)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                     title="履歴から選択"
                   >
                     <ChevronDown className="w-3.5 h-3.5" />
                   </button>
                 )}
                 {showHistory && history.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 overflow-hidden">
+                  <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10 overflow-hidden">
                     {history.map((p) => (
                       <button
                         key={p}
                         onClick={() => { setDbFolder(p); setShowHistory(false); }}
-                        className="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 truncate border-b border-gray-100 last:border-b-0"
+                        className="w-full text-left px-3 py-2 text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 truncate border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                         title={p}
                       >
                         {p}
@@ -260,7 +260,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
               </div>
               <button
                 onClick={handleSelectFolder}
-                className="flex items-center gap-1 px-3 py-2 text-xs bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors shrink-0"
+                className="flex items-center gap-1 px-3 py-2 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors shrink-0"
               >
                 <FolderOpen className="w-3.5 h-3.5" />
                 選択
@@ -272,7 +272,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
           {!isExtractMode && (
             <>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
                   タイトル <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -280,12 +280,12 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Issueのタイトル"
-                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-gray-300"
+                  className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 placeholder:text-gray-300 dark:placeholder:text-gray-600"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
                   本文（Markdown）
                 </label>
                 <textarea
@@ -293,12 +293,12 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                   onChange={(e) => setBody(e.target.value)}
                   placeholder="Issueの詳細内容…"
                   rows={9}
-                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-gray-300 resize-y font-mono"
+                  className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 placeholder:text-gray-300 dark:placeholder:text-gray-600 resize-y font-mono"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
                   担当者
                 </label>
                 <input
@@ -306,7 +306,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                   value={assignee}
                   onChange={(e) => setAssignee(e.target.value)}
                   placeholder="担当者名"
-                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-gray-300"
+                  className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 placeholder:text-gray-300 dark:placeholder:text-gray-600"
                 />
               </div>
             </>
@@ -317,7 +317,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
             <>
               {/* 担当者（全Issue共通） */}
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
                   担当者（全Issue共通）
                 </label>
                 <input
@@ -325,14 +325,14 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                   value={assignee}
                   onChange={(e) => setAssignee(e.target.value)}
                   placeholder="担当者名"
-                  className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-gray-300"
+                  className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 placeholder:text-gray-300 dark:placeholder:text-gray-600"
                 />
               </div>
 
               {/* Issue チェックリスト */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     抽出されたIssue（{checkedCount}/{extractedIssues.length}件選択）
                   </label>
                   <div className="flex gap-2">
@@ -340,16 +340,16 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                       onClick={() =>
                         setExtractedIssues((prev) => prev.map((i) => ({ ...i, checked: true })))
                       }
-                      className="text-xs text-blue-500 hover:text-blue-700"
+                      className="text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                     >
                       全選択
                     </button>
-                    <span className="text-gray-300">|</span>
+                    <span className="text-gray-300 dark:text-gray-600">|</span>
                     <button
                       onClick={() =>
                         setExtractedIssues((prev) => prev.map((i) => ({ ...i, checked: false })))
                       }
-                      className="text-xs text-gray-400 hover:text-gray-600"
+                      className="text-xs text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                     >
                       全解除
                     </button>
@@ -361,7 +361,9 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                     <div
                       key={idx}
                       className={`border rounded-lg overflow-hidden transition-colors ${
-                        issue.checked ? "border-blue-200 bg-blue-50/40" : "border-gray-200 bg-gray-50/40"
+                        issue.checked
+                          ? "border-blue-200 dark:border-blue-700 bg-blue-50/40 dark:bg-blue-900/20"
+                          : "border-gray-200 dark:border-gray-700 bg-gray-50/40 dark:bg-gray-700/20"
                       }`}
                     >
                       {/* チェックボックス行 */}
@@ -389,7 +391,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                                 )
                               )
                             }
-                            className="w-full text-sm font-medium text-gray-800 bg-transparent border-none outline-none focus:bg-white focus:ring-1 focus:ring-blue-300 rounded px-1 -mx-1"
+                            className="w-full text-sm font-medium text-gray-800 dark:text-gray-100 bg-transparent border-none outline-none focus:bg-white dark:focus:bg-gray-800 focus:ring-1 focus:ring-blue-300 rounded px-1 -mx-1"
                           />
                         </div>
                         <button
@@ -400,7 +402,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                               )
                             )
                           }
-                          className="shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+                          className="shrink-0 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
                           title={issue.expanded ? "折りたたむ" : "本文を表示"}
                         >
                           <ChevronRight
@@ -411,7 +413,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
 
                       {/* 本文（展開時） */}
                       {issue.expanded && (
-                        <div className="px-3 pb-2.5 border-t border-gray-100">
+                        <div className="px-3 pb-2.5 border-t border-gray-100 dark:border-gray-700">
                           <textarea
                             value={issue.body}
                             onChange={(e) =>
@@ -422,7 +424,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
                               )
                             }
                             rows={4}
-                            className="w-full mt-2 px-2 py-1.5 text-xs text-gray-700 font-mono border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 resize-y bg-white"
+                            className="w-full mt-2 px-2 py-1.5 text-xs text-gray-700 dark:text-gray-200 font-mono border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 resize-y bg-white dark:bg-gray-900"
                           />
                         </div>
                       )}
@@ -435,12 +437,12 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-200 shrink-0">
+        <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-200 dark:border-gray-700 shrink-0">
           <div className="flex gap-2">
             <button
               onClick={handleExtract}
               disabled={isExtracting || isSubmitting}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-purple-600 hover:bg-purple-50 rounded-lg transition-colors font-medium disabled:opacity-50 border border-purple-200"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-lg transition-colors font-medium disabled:opacity-50 border border-purple-200 dark:border-purple-700"
             >
               <Sparkles className="w-3.5 h-3.5" />
               {isExtracting ? "抽出中…" : "LLMで自動抽出"}
@@ -449,7 +451,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
               <button
                 onClick={() => setExtractedIssues([])}
                 disabled={isSubmitting}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
                 title="手動入力に戻る"
               >
                 <RotateCcw className="w-3 h-3" />
@@ -461,7 +463,7 @@ export default function IssuerModal({ meetingTitle, meetingContent, onClose }: P
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               キャンセル
             </button>

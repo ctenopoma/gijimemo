@@ -1,5 +1,5 @@
 import { getCurrentWindow, LogicalSize, LogicalPosition } from "@tauri-apps/api/window";
-import { Minus, Square, X, Settings, Search, FileText, Pin, PinOff, Minimize2, Maximize2 } from "lucide-react";
+import { Minus, Square, X, Settings, Search, FileText, Pin, PinOff, Minimize2, Maximize2, Moon, Sun } from "lucide-react";
 import { useAppStore } from "../store/appStore";
 import { useSettingsStore } from "../store/settingsStore";
 import { useState } from "react";
@@ -42,10 +42,14 @@ export default function TitleBar() {
     await saveSettings({ ...settings, always_on_top: next });
   };
 
+  const toggleDarkMode = async () => {
+    await saveSettings({ ...settings, dark_mode: !settings.dark_mode });
+  };
+
   return (
     <div
       data-tauri-drag-region
-      className="flex items-center h-10 px-3 bg-gray-800 select-none shrink-0 rounded-t-xl"
+      className="flex items-center h-10 px-3 bg-gray-800 dark:bg-gray-950 select-none shrink-0 rounded-t-xl"
     >
       {/* Window controls (left) */}
       <div className="flex items-center gap-1.5 mr-3">
@@ -104,6 +108,17 @@ export default function TitleBar() {
           <Settings className="w-4 h-4" />
         </NavButton>
         <button
+          onClick={toggleDarkMode}
+          className={`p-1.5 rounded transition-colors ${
+            settings.dark_mode
+              ? "text-yellow-400 hover:text-yellow-300"
+              : "text-gray-400 hover:text-gray-200"
+          }`}
+          title={settings.dark_mode ? "ライトモードに切替" : "ダークモードに切替"}
+        >
+          {settings.dark_mode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+        <button
           onClick={toggleCompact}
           className={`p-1.5 rounded transition-colors ${
             isCompact
@@ -146,8 +161,8 @@ function NavButton({
       onClick={onClick}
       className={`p-1.5 rounded transition-colors ${
         active
-          ? "text-white bg-gray-600"
-          : "text-gray-400 hover:text-gray-200 hover:bg-gray-700"
+          ? "text-white bg-gray-600 dark:bg-gray-700"
+          : "text-gray-400 hover:text-gray-200 hover:bg-gray-700 dark:hover:bg-gray-800"
       }`}
       title={title}
     >

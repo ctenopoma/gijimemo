@@ -21,6 +21,7 @@ pub struct Settings {
     pub always_on_top: bool,
     pub auto_transparent: bool,
     pub inactive_opacity: f64,
+    pub dark_mode: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

@@ -95,8 +95,13 @@ pub fn init_db(db_path: std::path::PathBuf) -> Result<AppDb> {
         ")?;
     }
 
-    // Future migrations go here:
-    // if current_version < 2 { ... }
+    if current_version < 2 {
+        conn.execute_batch("
+            ALTER TABLE settings ADD COLUMN dark_mode INTEGER NOT NULL DEFAULT 0;
+            DELETE FROM schema_version;
+            INSERT INTO schema_version (version) VALUES (2);
+        ")?;
+    }
 
     Ok(AppDb(Mutex::new(conn)))
 }

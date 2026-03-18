@@ -184,13 +184,13 @@ export default function EditorPage() {
         />
       )}
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200 bg-gray-50 shrink-0">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shrink-0">
         <button
           onClick={() => {
             if (isDirty && !confirm("未保存の変更があります。新規作成しますか？")) return;
             newDocument();
           }}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
           title="新規作成"
         >
           <FileX className="w-3.5 h-3.5" />
@@ -201,8 +201,8 @@ export default function EditorPage() {
           disabled={isSaving}
           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
             isDirty
-              ? "text-blue-600 hover:bg-blue-50 font-semibold"
-              : "text-gray-400"
+              ? "text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 font-semibold"
+              : "text-gray-400 dark:text-gray-600"
           }`}
           title="保存 (Ctrl+S)"
         >
@@ -216,8 +216,8 @@ export default function EditorPage() {
           onClick={copyMarkdown}
           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
             copiedMd
-              ? "text-green-600 bg-green-50"
-              : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+              ? "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
           }`}
           title="Markdownでコピー"
         >
@@ -228,8 +228,8 @@ export default function EditorPage() {
           onClick={copyPlainText}
           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
             copiedText
-              ? "text-green-600 bg-green-50"
-              : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+              ? "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
           }`}
           title="テキストでコピー"
         >
@@ -239,7 +239,7 @@ export default function EditorPage() {
         <button
           onClick={handleSummarize}
           disabled={isStreaming}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-purple-600 hover:bg-purple-50 rounded transition-colors font-medium disabled:opacity-50"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded transition-colors font-medium disabled:opacity-50"
           title="LLMで要約"
         >
           <Sparkles className="w-3.5 h-3.5" />
@@ -247,7 +247,7 @@ export default function EditorPage() {
         </button>
         <button
           onClick={() => setShowIssuerModal(true)}
-          className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 rounded transition-colors font-medium"
+          className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded transition-colors font-medium"
           title="Issuerにタスクを登録"
         >
           <ListTodo className="w-3.5 h-3.5" />
@@ -265,7 +265,7 @@ export default function EditorPage() {
               placeholder="会議タイトル"
               value={meeting.title}
               onChange={(e) => setMeeting({ title: e.target.value })}
-              className="w-full px-3 py-2 text-lg font-semibold border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-gray-300"
+              className="w-full px-3 py-2 text-lg font-semibold border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 placeholder:text-gray-300 dark:placeholder:text-gray-600"
             />
           </div>
           <input
@@ -273,7 +273,7 @@ export default function EditorPage() {
             placeholder="開催日時"
             value={meeting.held_at}
             onChange={(e) => setMeeting({ held_at: e.target.value })}
-            className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 placeholder:text-gray-300"
+            className="px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 placeholder:text-gray-300 dark:placeholder:text-gray-600"
           />
         </div>
 
@@ -300,12 +300,12 @@ export default function EditorPage() {
 
         {/* LLM Result */}
         {(llmResult || isStreaming) && (
-          <div className="border border-purple-200 rounded-lg bg-purple-50 overflow-hidden">
-            <div className="flex items-center gap-2 px-3 py-2 bg-purple-100 border-b border-purple-200">
-              <Sparkles className="w-4 h-4 text-purple-600" />
-              <span className="text-sm font-semibold text-purple-700">LLM要約</span>
+          <div className="border border-purple-200 dark:border-purple-800 rounded-lg bg-purple-50 dark:bg-purple-900/20 overflow-hidden">
+            <div className="flex items-center gap-2 px-3 py-2 bg-purple-100 dark:bg-purple-900/40 border-b border-purple-200 dark:border-purple-800">
+              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">LLM要約</span>
               {isStreaming && (
-                <span className="text-xs text-purple-500 animate-pulse">生成中…</span>
+                <span className="text-xs text-purple-500 dark:text-purple-400 animate-pulse">生成中…</span>
               )}
               <div className="ml-auto flex items-center gap-2">
                 {llmResult && !isStreaming && (
@@ -313,8 +313,8 @@ export default function EditorPage() {
                     onClick={copyLlmResult}
                     className={`flex items-center gap-1 text-xs transition-colors ${
                       copiedLlm
-                        ? "text-green-600"
-                        : "text-purple-400 hover:text-purple-600"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-purple-400 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-300"
                     }`}
                     title="要約をコピー"
                   >
@@ -324,13 +324,13 @@ export default function EditorPage() {
                 )}
                 <button
                   onClick={() => setLlmResult("")}
-                  className="text-xs text-purple-400 hover:text-purple-600"
+                  className="text-xs text-purple-400 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-300"
                 >
                   閉じる
                 </button>
               </div>
             </div>
-            <pre className="px-3 py-3 text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto max-h-64">
+            <pre className="px-3 py-3 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto max-h-64">
               {llmResult}
               {isStreaming && <span className="animate-pulse">▊</span>}
             </pre>
