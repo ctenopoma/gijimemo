@@ -63,6 +63,9 @@ pub fn init_db(db_path: std::path::PathBuf) -> Result<AppDb> {
 ## 議事録タイトル
 {title}
 
+## 日時
+{datetime}
+
 ## 内容
 {content}',
                 always_on_top INTEGER NOT NULL DEFAULT 1,
