@@ -1131,7 +1131,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "futures-util",
- "once_cell",
  "reqwest 0.12.28",
  "rusqlite",
  "serde",
@@ -1142,7 +1141,6 @@ dependencies = [
  "tauri-plugin-shell",
  "tokio",
  "tokio-stream",
- "url",
  "uuid",
 ]
 

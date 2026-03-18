@@ -26,6 +26,14 @@ export interface Meeting {
   updated_at: string;
 }
 
+export interface MeetingListItem {
+  id: string;
+  title: string;
+  held_at: string;
+  updated_at: string;
+  card_count: number;
+}
+
 function newCard(meetingId: string, orderIndex: number): AgendaCard {
   return {
     id: nanoid(),

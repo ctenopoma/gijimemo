@@ -10,7 +10,6 @@ const COMPACT_SIZE = { width: 360, height: 120 };
 export default function TitleBar() {
   const { currentPage, setPage } = useAppStore();
   const { settings, saveSettings } = useSettingsStore();
-  const [alwaysOnTop, setAlwaysOnTop] = useState(settings.always_on_top);
   const [isCompact, setIsCompact] = useState(false);
 
   const appWindow = getCurrentWindow();
@@ -24,15 +23,12 @@ export default function TitleBar() {
     setIsCompact(next);
     const newSize = next ? COMPACT_SIZE : NORMAL_SIZE;
 
-    // 左下を固定したままサイズ変更するため、変更前の左下座標を取得
     const physPos = await appWindow.outerPosition();
     const physSize = await appWindow.outerSize();
     const scale = await appWindow.scaleFactor();
 
-    // 左下の物理座標
     const bottomY = physPos.y + physSize.height;
 
-    // 新しい論理座標（左下を固定）
     const newLogicalX = physPos.x / scale;
     const newLogicalY = (bottomY - newSize.height * scale) / scale;
 
@@ -41,8 +37,7 @@ export default function TitleBar() {
   };
 
   const togglePin = async () => {
-    const next = !alwaysOnTop;
-    setAlwaysOnTop(next);
+    const next = !settings.always_on_top;
     await appWindow.setAlwaysOnTop(next);
     await saveSettings({ ...settings, always_on_top: next });
   };
@@ -122,13 +117,13 @@ export default function TitleBar() {
         <button
           onClick={togglePin}
           className={`p-1.5 rounded transition-colors ${
-            alwaysOnTop
+            settings.always_on_top
               ? "text-blue-400 hover:text-blue-300"
               : "text-gray-400 hover:text-gray-200"
           }`}
-          title={alwaysOnTop ? "常に最前面 ON" : "常に最前面 OFF"}
+          title={settings.always_on_top ? "常に最前面 ON" : "常に最前面 OFF"}
         >
-          {alwaysOnTop ? <Pin className="w-4 h-4" /> : <PinOff className="w-4 h-4" />}
+          {settings.always_on_top ? <Pin className="w-4 h-4" /> : <PinOff className="w-4 h-4" />}
         </button>
       </div>
     </div>
